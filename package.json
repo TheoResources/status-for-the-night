@@ -1,0 +1,13 @@
+{
+  "name": "status-for-the-night",
+  "version": "1.0.0",
+  "description": "Public night status page for sched-prod service",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test.js"
+  },
+  "author": "Michal Matlosz <TheoResources>",
+  "license": "MIT"
+}
