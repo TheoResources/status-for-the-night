@@ -25,12 +25,28 @@ export function processStatusData(feed) {
     return { updatedAt, incidents: [], lines: [] };
   }
 
-  // Sort chronologically to identify the latest night
+  // Sort chronologically
   allIncidents.sort((a, b) => new Date(a.opened).getTime() - new Date(b.opened).getTime());
-  const latestDate = allIncidents[allIncidents.length - 1].opened.slice(0, 10); // e.g. "2026-10-12"
 
   // R-H2L: Last night only. Nothing older stays on the page.
-  const lastNightIncidents = allIncidents.filter(inc => inc.opened && inc.opened.startsWith(latestDate));
+  // Overnight shifts span across midnight (e.g. 23:00 to 06:00).
+  // Any gap between incidents > 10 hours marks an earlier shift/night.
+  const lastNightIncidents = [];
+  if (allIncidents.length > 0) {
+    for (let i = allIncidents.length - 1; i >= 0; i--) {
+      if (i === allIncidents.length - 1) {
+        lastNightIncidents.unshift(allIncidents[i]);
+      } else {
+        const currentOpened = new Date(allIncidents[i].opened).getTime();
+        const nextOpened = new Date(allIncidents[i + 1].opened).getTime();
+        if (nextOpened - currentOpened > 10 * 3600 * 1000) {
+          // Incident belongs to an older shift/night
+          break;
+        }
+        lastNightIncidents.unshift(allIncidents[i]);
+      }
+    }
+  }
 
   // R-K9R: Newest incident at the top
   lastNightIncidents.sort((a, b) => new Date(b.opened).getTime() - new Date(a.opened).getTime());

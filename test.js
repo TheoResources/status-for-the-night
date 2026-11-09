@@ -22,13 +22,13 @@ const processed = processStatusData(mockFeed);
 assert.strictEqual(processed.updatedAt, "2026-11-09T18:00:00Z");
 assert.ok(processed.updatedAt.endsWith("Z"), "updatedAt must end in Z");
 
-// R-H2L: Last night only (filtered 5208 and 5209)
-assert.strictEqual(processed.incidents.length, 5, "Must keep last night only");
-assert.strictEqual(processed.incidents.every(i => i.date === "10/12"), true, "All dates must be 10/12 (month first)");
+// R-H2L: Last night only (filtered 5208, keeps 5209-5214 spanning overnight)
+assert.strictEqual(processed.incidents.length, 6, "Must keep last night only (6 incidents)");
+assert.ok(processed.incidents.some(i => i.what === "gps gaps"), "Must include gps gaps from overnight");
 
 // R-K9R: Newest incident at top
 assert.strictEqual(processed.incidents[0].id, "5214", "Newest incident must be at top");
-assert.strictEqual(processed.incidents[processed.incidents.length - 1].id, "5210", "Oldest incident must be at bottom");
+assert.strictEqual(processed.incidents[processed.incidents.length - 1].id, "5209", "Oldest incident of shift must be at bottom");
 
 // R-K5H: author names who ran it
 assert.strictEqual(processed.incidents[0].author, "—");
